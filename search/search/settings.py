@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',
+    #'channels',
     'simplesearch',
 ]
 
@@ -56,7 +56,7 @@ ROOT_URLCONF = 'search.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,7 +131,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-CHANNEL_LAYERS = {}
+#CHANNEL_LAYERS = {}
 
 
-ASGI_APPLICATION = 'search.routing.application'
+#ASGI_APPLICATION = 'search.routing.application'

@@ -1,0 +1,29 @@
+{% block title %}Search{% endblock title %}
+
+
+{% block content %}
+<form method="get" action="." style="margin: 0">
+    <input  id="search_box" type="text" name="search_box"  placeholder="Search..." >
+    <input  id="exact" type="checkbox" name="exact">
+    <input  id="text_all" type="checkbox" name="text_all">
+    <button id="search_submit" type="submit" name="button">Submit</button>
+</form>
+<script>
+    var socket = new WebSocket('ws://' + window.location.host + '');
+
+    socket.onopen = function open() {
+      console.log('WebSockets connection created.');
+    };
+
+    if (socket.readyState == WebSocket.OPEN) {
+      socket.onopen();
+    }
+</script>
+{% endblock content %}
+
+{% for object in objects %}
+    <h2>{{ object.title }}</h2>
+    <textarea>{{ object.text_one }}</textarea>
+    <textarea>{{ object.text_two }}</textarea>
+    <hr>
+{% endfor %}
