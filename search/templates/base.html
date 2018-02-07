@@ -14,15 +14,8 @@
     <nav class="navbar navbar-default">
         <div class="container">
             <div class="navbar-header">
-                <a class="navbar-brand" href="{% url 'homepage' %}">Simple chat</a>
+                <a class="navbar-brand" href="">Search</a>
             </div>
-            <!-- check if user authenticated -->
-            {% if request.user %}
-                <!-- if yes, show button logout -->
-                <div class="navbar-right">
-                    <a class="navbar-brand" href="{% url 'authentication:logout' %}">Log out</a>
-                </div>
-            {% endif %}
         </div>
     </nav>
     <!-- Extra navbar -->

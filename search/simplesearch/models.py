@@ -24,7 +24,6 @@ class DataManager(models.Manager):
         if kwargs.get('text_all', False):
             arguments['text_one__icontains'] = text
             arguments['text_two__icontains'] = text
-
         if arguments:
             return self.get_queryset().search(arguments)
         else:

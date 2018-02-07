@@ -1,13 +1,27 @@
+{% extends 'base.html' %}
+
 {% block title %}Search{% endblock title %}
 
 
 {% block content %}
 <form method="get" action="." style="margin: 0">
     <input  id="search_box" type="text" name="search_box"  placeholder="Search..." >
+    <label for="exact">Exact</label>
     <input  id="exact" type="checkbox" name="exact">
+    <label for="text_all"> All text</label>
     <input  id="text_all" type="checkbox" name="text_all">
-    <button id="search_submit" type="submit" name="button">Submit</button>
+    <input id="search_submit" type="submit" name="button" value="Search">
 </form>
+<div id="await">
+{% for object in objects %}
+    <h2>{{ object.title }}</h2>
+    <textarea>{{ object.text_one }}</textarea>
+    <textarea>{{ object.text_two }}</textarea>
+    <hr>
+{% endfor %}
+</div>
+{% endblock content %}
+{% block script %}
 <script>
     var socket = new WebSocket('ws://' + window.location.host + '');
 
@@ -15,15 +29,23 @@
       console.log('WebSockets connection created.');
     };
 
+    socket.onmessage = function(e) {
+        $('div#await').prepend(e.data)
+        //for (f in e.data) {
+        //    $('div#await').append('<h2>' + f.title + '</h2>' +
+        //    '<textarea>' + f.text_one + '</textarea>' +
+        //    '<textarea>' + f.text_two + '</textarea>')
+        //}
+    };
+
+    $('#search_submit').click(function(event) {
+        //event.preventDefault();
+        socket.send(arr)
+    });
+
     if (socket.readyState == WebSocket.OPEN) {
       socket.onopen();
-    }
+    };
 </script>
-{% endblock content %}
+{% endblock script %}
 
-{% for object in objects %}
-    <h2>{{ object.title }}</h2>
-    <textarea>{{ object.text_one }}</textarea>
-    <textarea>{{ object.text_two }}</textarea>
-    <hr>
-{% endfor %}
