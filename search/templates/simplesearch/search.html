@@ -5,6 +5,7 @@
 
 {% block content %}
 <form method="get" action="." style="margin: 0">
+    {% csrf_token %}
     <input  id="search_box" type="text" name="search_box"  placeholder="Search..." >
     <label for="exact">Exact</label>
     <input  id="exact" type="checkbox" name="exact">
@@ -13,13 +14,9 @@
     <input id="search_submit" type="submit" name="button" value="Search">
 </form>
 <div id="await">
-{% for object in objects %}
-    <h2>{{ object.title }}</h2>
-    <textarea>{{ object.text_one }}</textarea>
-    <textarea>{{ object.text_two }}</textarea>
-    <hr>
-{% endfor %}
+
 </div>
+<input type="submit" id="load_more" value="Load more">
 {% endblock content %}
 {% block script %}
 <script>
@@ -30,18 +27,52 @@
     };
 
     socket.onmessage = function(e) {
-        $('div#await').prepend(e.data)
-        //for (f in e.data) {
-        //    $('div#await').append('<h2>' + f.title + '</h2>' +
-        //    '<textarea>' + f.text_one + '</textarea>' +
-        //    '<textarea>' + f.text_two + '</textarea>')
-        //}
+        //console.log(e.data)
+        data = JSON.parse(e.data)
+        object = data
+        console.log(data)
+        console.log(data[0])
+        for (o in data) {
+        console.log(data[0])
+        obj = data[o]
+        $('div#await').append('<h2>' + obj['fields']['title'] + '</h2>' +
+        '<textarea>' + obj['fields']['text_one'] + '</textarea>' +
+        '<textarea>' + obj['fields']['text_two'] + '</textarea>' +
+        '<hr>')
+        }
+
     };
 
+
     $('#search_submit').click(function(event) {
-        //event.preventDefault();
-        socket.send(arr)
-    });
+        $('div#await').empty()
+        event.preventDefault()
+        exact = false
+        text_all = false
+        if ($('input#exact').is(':checked')) {
+            exact = true
+        }
+
+        if ($('input#text_all').is(':checked')) {
+            text_all = true
+        }
+
+        socket.send(JSON.stringify({
+            'text': $('input#search_box').val(), 'exact': exact,
+            'text_all': text_all,
+            }))
+        //$.ajax({
+        //type: "post",
+        //data: {'csrfmiddlewaretoken': '{{ csrf_token }}', },
+        //url: "/",
+        //success: function(data) {
+        //        console.log('da')
+        //   },
+        //})
+        //.done(function(response) {
+        //    $('div#await').append(response)
+        //})
+        });
 
     if (socket.readyState == WebSocket.OPEN) {
       socket.onopen();
