@@ -5,7 +5,6 @@
 
 {% block content %}
 <form method="get" action="." style="margin: 0">
-    {% csrf_token %}
     <input  id="search_box" type="text" name="search_box"  placeholder="Search..." >
     <label for="exact">Exact</label>
     <input  id="exact" type="checkbox" name="exact">
@@ -28,16 +27,15 @@
 
     socket.onmessage = function(e) {
         //console.log(e.data)
-        data = JSON.parse(e.data)
-        object = data
+        var data = JSON.parse(e.data)
         console.log(data)
-        console.log(data[0])
         for (o in data) {
-        console.log(data[0])
-        obj = data[o]
+        var obj = data[o]
+        console.log('{{' + date_o + '|date:"D"}}')
         $('div#await').append('<h2>' + obj['fields']['title'] + '</h2>' +
         '<textarea>' + obj['fields']['text_one'] + '</textarea>' +
         '<textarea>' + obj['fields']['text_two'] + '</textarea>' +
+        '<p>' + obj['fields']['date_created'] + '</p>' +
         '<hr>')
         }
 
@@ -47,8 +45,8 @@
     $('#search_submit').click(function(event) {
         $('div#await').empty()
         event.preventDefault()
-        exact = false
-        text_all = false
+        var exact = false
+        var text_all = false
         if ($('input#exact').is(':checked')) {
             exact = true
         }
@@ -58,21 +56,17 @@
         }
 
         socket.send(JSON.stringify({
+            'action': 'search',
             'text': $('input#search_box').val(), 'exact': exact,
             'text_all': text_all,
             }))
-        //$.ajax({
-        //type: "post",
-        //data: {'csrfmiddlewaretoken': '{{ csrf_token }}', },
-        //url: "/",
-        //success: function(data) {
-        //        console.log('da')
-        //   },
-        //})
-        //.done(function(response) {
-        //    $('div#await').append(response)
-        //})
         });
+    $('#load_more').click(function(event) {
+        event.preventDefault()
+        socket.send(JSON.stringify({
+            'action': 'more',
+        }))
+    });
 
     if (socket.readyState == WebSocket.OPEN) {
       socket.onopen();

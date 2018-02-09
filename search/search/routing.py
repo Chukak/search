@@ -8,13 +8,4 @@ application = ProtocolTypeRouter({
         url(r'^$', ResultConsumer)
     ])
 })
-#application = ProtocolTypeRouter({
-    #'http': URLRouter([
-    #   url(r'^$', ResultConsumer),
-    #]),
-    #'websocket': URLRouter([
-    #    url(r'^$', ResultConsumer),
-        #url(r'^$', include('simplesearch.routing'))
 
-    #])
-#})

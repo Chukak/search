@@ -3,31 +3,33 @@ from django.utils.translation import gettext_lazy as _
 
 
 class DataQuerySet(models.QuerySet):
-    def search(self, arguments=None, text=None):
+    def search(self, arguments, text=None, ranges=None):
         if arguments is not None:
             q_object = models.Q()
             for key, val in arguments.items():
                 q_object.add(models.Q(**{key: val}), models.Q.OR)
         else:
             q_object = models.Q(title__icontains=text)
-        return self.filter(q_object)
+        return self.filter(q_object)[ranges[0]:ranges[1]]
 
 
 class DataManager(models.Manager):
     def get_queryset(self):
         return DataQuerySet(self.model, using=self._db)
 
-    def search(self, text, **kwargs):
+    def search(self, text, ranges, **kwargs):
         arguments = {}
-        if kwargs.get('exact', False):
-            arguments['title__exact'] = text
-        if kwargs.get('text_all', False):
+        if kwargs.get('exact'):
+            arguments['title__iexact'] = text
+        else:
+            arguments['title__icontains'] = text
+        if kwargs.get('text_all'):
             arguments['text_one__icontains'] = text
             arguments['text_two__icontains'] = text
         if arguments:
-            return self.get_queryset().search(arguments)
+            return self.get_queryset().search(arguments, ranges=ranges)
         else:
-            return self.get_queryset().search(None, text)
+            return self.get_queryset().search(None, text, ranges=ranges)
 
 
 class Data(models.Model):
