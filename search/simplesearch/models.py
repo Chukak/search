@@ -24,8 +24,7 @@ class DataManager(models.Manager):
         else:
             arguments['title__icontains'] = text
         if kwargs.get('text_all'):
-            arguments['text_one__icontains'] = text
-            arguments['text_two__icontains'] = text
+            arguments['text__icontains'] = text
         if arguments:
             return self.get_queryset().search(arguments, ranges=ranges)
         else:
@@ -37,9 +36,11 @@ class Data(models.Model):
 
     title = models.CharField(_('title'), max_length=130, db_column='title')
 
-    text_one = models.TextField(_('text one'), max_length=10000, db_column='text_one')
+    author = models.CharField(_('author'), max_length=30, db_column='author')
 
-    text_two = models.TextField(_('text two'), max_length=1000, db_column='text_two')
+    text = models.TextField(_('text'), max_length=10000, db_column='text')
+
+    rating = models.IntegerField(_('rating'), db_column='rating')
 
     date_created = models.DateTimeField(_('date created'), db_column='date_created', auto_now_add=True)
 

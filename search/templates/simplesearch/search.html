@@ -31,10 +31,8 @@
         console.log(data)
         for (o in data) {
         var obj = data[o]
-        console.log('{{' + date_o + '|date:"D"}}')
         $('div#await').append('<h2>' + obj['fields']['title'] + '</h2>' +
-        '<textarea>' + obj['fields']['text_one'] + '</textarea>' +
-        '<textarea>' + obj['fields']['text_two'] + '</textarea>' +
+        '<textarea>' + obj['fields']['text'] + '</textarea>' +
         '<p>' + obj['fields']['date_created'] + '</p>' +
         '<hr>')
         }
