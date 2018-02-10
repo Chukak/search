@@ -6,10 +6,17 @@
 {% block content %}
 <form method="get" action="." style="margin: 0">
     <input  id="search_box" type="text" name="search_box"  placeholder="Search..." >
-    <label for="exact">Exact</label>
-    <input  id="exact" type="checkbox" name="exact">
+    <label for="author">author</label>
+    <input id="author" type="checkbox">
     <label for="text_all"> All text</label>
     <input  id="text_all" type="checkbox" name="text_all">
+
+    <select id="years">
+            <option class="active">ALL</option>
+        {% for year in years %}
+            <option>{{ year }}</option>
+        {% endfor %}
+    </select>
     <input id="search_submit" type="submit" name="button" value="Search">
 </form>
 <div id="await">
@@ -43,10 +50,10 @@
     $('#search_submit').click(function(event) {
         $('div#await').empty()
         event.preventDefault()
-        var exact = false
+        var author = false
         var text_all = false
-        if ($('input#exact').is(':checked')) {
-            exact = true
+        if ($('input#author').is(':checked')) {
+            author = true
         }
 
         if ($('input#text_all').is(':checked')) {
@@ -55,8 +62,8 @@
 
         socket.send(JSON.stringify({
             'action': 'search',
-            'text': $('input#search_box').val(), 'exact': exact,
-            'text_all': text_all,
+            'text': $('input#search_box').val(), 'author': author,
+            'text_all': text_all, 'date': $('select#years').val(),
             }))
         });
     $('#load_more').click(function(event) {

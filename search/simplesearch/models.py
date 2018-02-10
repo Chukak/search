@@ -3,14 +3,18 @@ from django.utils.translation import gettext_lazy as _
 
 
 class DataQuerySet(models.QuerySet):
-    def search(self, arguments, text=None, ranges=None):
+    def search(self, arguments, date, text=None, ranges=None):
         if arguments is not None:
             q_object = models.Q()
             for key, val in arguments.items():
                 q_object.add(models.Q(**{key: val}), models.Q.OR)
         else:
             q_object = models.Q(title__icontains=text)
-        return self.filter(q_object)[ranges[0]:ranges[1]]
+        if date is None:
+            return self.filter(q_object)[ranges[0]:ranges[1]]
+        else:
+            return self.filter(q_object).filter(date_created__year__gte=date,
+                                                date_created__year__lt=date + 1)[ranges[0]: ranges[1]]
 
 
 class DataManager(models.Manager):
@@ -19,16 +23,20 @@ class DataManager(models.Manager):
 
     def search(self, text, ranges, **kwargs):
         arguments = {}
-        if kwargs.get('exact'):
-            arguments['title__iexact'] = text
-        else:
-            arguments['title__icontains'] = text
+        print(kwargs)
+        if kwargs.get('author'):
+            arguments['author__iexact'] = text
         if kwargs.get('text_all'):
             arguments['text__icontains'] = text
-        if arguments:
-            return self.get_queryset().search(arguments, ranges=ranges)
+        if kwargs.get('date') != 'ALL':
+            date = int(kwargs.get('date'))
         else:
-            return self.get_queryset().search(None, text, ranges=ranges)
+            date = None
+
+        if arguments:
+            return self.get_queryset().search(arguments, date, ranges=ranges)
+        else:
+            return self.get_queryset().search(None, date, text=text, ranges=ranges)
 
 
 class Data(models.Model):
