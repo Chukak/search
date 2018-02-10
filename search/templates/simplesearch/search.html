@@ -3,70 +3,112 @@
 {% block title %}Search{% endblock title %}
 
 
-{% block content %}
-<form method="get" action="." style="margin: 0">
-    <input  id="search_box" type="text" name="search_box"  placeholder="Search..." >
-    <label for="author">author</label>
-    <input id="author" type="checkbox">
-    <label for="text_all"> All text</label>
-    <input  id="text_all" type="checkbox" name="text_all">
+{% block head %}
+<style>
+    .center {
+        margin-left:80px;
+    }
+    .padding {
+        margin-left:8px;
+        margin-right:8px;
+    }
+    .quest-username {
+        padding-top:4px;
+        padding-bottom:2px;
+    }
+    .long-text {
+        display:block;
+        width:630px;
+        word-wrap:break-word;
+        padding: 4px;
+    }
 
-    <select id="years">
+</style>
+{% endblock head %}
+
+{% block navbar %}
+<form class="navbar-form" method="get" action=".">
+    <div class="navbar-left">
+    <input class="form-control padding" id="search_box" type="text" name="search_box" style="width:380px;" placeholder="Search" >
+    </div>
+    <div class="navbar-left center">
+        <label class="padding" for="author"> Author </label>
+        <input class="form-check-input" id="author" type="checkbox">
+        <label class="padding" for="text_all"> All text </label>
+        <input class="form-check-input" id="text_all" type="checkbox" name="text_all">
+        <label for="years"></label>
+        <select id="years" class="form-control padding">
             <option class="active">ALL</option>
         {% for year in years %}
             <option>{{ year }}</option>
         {% endfor %}
-    </select>
-    <input id="search_submit" type="submit" name="button" value="Search">
+        </select>
+    </div>
+    <div class="navbar-right">
+        <input class="btn btn-success" id="search_submit" type="submit" name="button" value="Search">
+    </div>
 </form>
-<div id="await">
+{% endblock navbar %}
 
+{% block content %}
+<div id="results">
+    {{ text|escapejs }}
 </div>
-<input type="submit" id="load_more" value="Load more">
+<input class="btn btn-primary" type="submit" id="load_more" value="Load more" disabled="disabled">
+
 {% endblock content %}
 {% block script %}
 <script>
     var socket = new WebSocket('ws://' + window.location.host + '');
 
     socket.onopen = function open() {
-      console.log('WebSockets connection created.');
+        console.log('WebSockets connection created.');
     };
 
     socket.onmessage = function(e) {
-        //console.log(e.data)
         var data = JSON.parse(e.data)
-        console.log(data)
-        for (o in data) {
-        var obj = data[o]
-        $('div#await').append('<h2>' + obj['fields']['title'] + '</h2>' +
-        '<textarea>' + obj['fields']['text'] + '</textarea>' +
-        '<p>' + obj['fields']['date_created'] + '</p>' +
-        '<hr>')
+        if (data.length > 0) {
+            for (o in data) {
+                var obj = data[o]
+                var string = $.trim(obj['fields']['text']).substring(0, 1000).trim(this)
+                if (string.length == 1000) {
+                    string = string + "..."
+                }
+                $('div#results').append('<h4><strong>' + obj['fields']['title'] + '</strong></h4>' +
+                                      '<span class="long-text">' +  string + '</span>' +
+                                      '<p>' + obj['fields']['date_created'] + '</p>' +
+                                      '<div align="left" class="quest-username"><strong>Author: </strong>' +
+                                      '<a>' + obj['fields']['author'] + '</a></div>' +
+                                      '<div align="left"><strong>Date: </strong>' + obj['fields']['date_created'] + '</div>' +
+                                      '<div align="left"><strong>Rating: </strong>' + obj['fields']['rating'] + '</div>' +
+                                      '<hr>')
+                }
+                $('input#load_more').removeAttr('disabled', 'disabled')
+                }
+        else {
+            $('input#load_more').attr('disabled', 'disabled')
         }
-
     };
 
-
     $('#search_submit').click(function(event) {
-        $('div#await').empty()
+        $('div#results').empty()
         event.preventDefault()
         var author = false
         var text_all = false
         if ($('input#author').is(':checked')) {
             author = true
         }
-
         if ($('input#text_all').is(':checked')) {
             text_all = true
         }
-
         socket.send(JSON.stringify({
             'action': 'search',
             'text': $('input#search_box').val(), 'author': author,
             'text_all': text_all, 'date': $('select#years').val(),
             }))
-        });
-    $('#load_more').click(function(event) {
+        })
+
+    $('input#load_more').click(function(event) {
         event.preventDefault()
         socket.send(JSON.stringify({
             'action': 'more',
@@ -74,7 +116,7 @@
     });
 
     if (socket.readyState == WebSocket.OPEN) {
-      socket.onopen();
+        socket.onopen();
     };
 </script>
 {% endblock script %}

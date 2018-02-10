@@ -1,16 +1,4 @@
-from django.shortcuts import render, HttpResponse
-import datetime
-from django.views.generic import TemplateView, View
-
-from django.template.response import TemplateResponse
-from .models import Data
-
-#from redis.client
-import json
-
-
-from django.db.models import Q
-# Create your views here.
+from django.views.generic import TemplateView
 
 
 class SearchView(TemplateView):

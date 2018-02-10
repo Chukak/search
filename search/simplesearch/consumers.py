@@ -1,5 +1,4 @@
-from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
-#from django.shortcuts import render_to_response
+from channels.generic.websocket import WebsocketConsumer
 from django.core.serializers import serialize
 from django.utils.text import force_text
 from django.core.serializers.json import DjangoJSONEncoder
@@ -25,19 +24,16 @@ class ResultConsumer(WebsocketConsumer):
 
     def connect(self):
         self.accept()
-        print('connect')
 
     def disconnect(self, close_code):
         self.text = ''
         self.number = 0
         self.args.clear()
-        print('disconnect')
         self.close()
 
     def receive(self, text_data=None, bytes_data=None):
         args = json.loads(text_data)
         action = args.pop('action', '')
-        objects = []
         if action != '':
             if action == 'search' and args.get('text', '') != '':
                 self.args.clear()
@@ -45,13 +41,15 @@ class ResultConsumer(WebsocketConsumer):
                 self.number = 0
                 if self.text != '':
                     self.args = args
-            if self.number >= 0:
-                objects = Data.objects.search(self.text, ranges=(self.number, self.number + 5),
+            if self.number >= 0 and self.args and self.text:
+                objects = Data.objects.search(self.text, ranges=(self.number, self.number + 6),
                                               **self.args)
                 if objects.count() > 0:
-                    self.number += 5
+                    self.number += 6
                 else:
                     self.number = -1
-        self.send(serialize("json", objects, cls=CustomEncoder))
+                self.send(serialize("json", objects,
+                                    fields=('text', 'author', 'date_created', 'rating', 'title'),
+                                    cls=CustomEncoder))
 
 
