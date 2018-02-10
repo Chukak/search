@@ -4,5 +4,4 @@ venv
 migrations
 *.sqlite3
 *.cnf
-*.data
 script.py
