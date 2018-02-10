@@ -2,8 +2,8 @@
 
 {% block title %}Search{% endblock title %}
 
-
 {% block head %}
+<!--Set styles -->
 <style>
     .center {
         margin-left:80px;
@@ -22,11 +22,11 @@
         word-wrap:break-word;
         padding: 4px;
     }
-
 </style>
 {% endblock head %}
 
 {% block navbar %}
+<!-- Set fixed navbar with bootstrap -->
 <form class="navbar-form" method="get" action=".">
     <div class="navbar-left">
     <input class="form-control padding" id="search_box" type="text" name="search_box" style="width:380px;" placeholder="Search" >
@@ -39,6 +39,7 @@
         <label for="years"></label>
         <select id="years" class="form-control padding">
             <option class="active">ALL</option>
+        <!-- years range for select tag -->
         {% for year in years %}
             <option>{{ year }}</option>
         {% endfor %}
@@ -51,29 +52,38 @@
 {% endblock navbar %}
 
 {% block content %}
+<!-- Results -->
 <div id="results">
     {{ text|escapejs }}
 </div>
 <input class="btn btn-primary" type="submit" id="load_more" value="Load more" disabled="disabled">
-
 {% endblock content %}
-{% block script %}
-<script>
-    var socket = new WebSocket('ws://' + window.location.host + '');
 
+{% block script %}
+<!-- Script sockets -->
+<script>
+    // get socket
+    var socket = new WebSocket('ws://' + window.location.host + '');
+    // when socket open
     socket.onopen = function open() {
         console.log('WebSockets connection created.');
     };
-
+    // when socket get data
     socket.onmessage = function(e) {
+        // parse data
         var data = JSON.parse(e.data)
+        //check if empty
         if (data.length > 0) {
             for (o in data) {
+                // result object
                 var obj = data[o]
+                // truncate text, obly 1000 character, set this
                 var string = $.trim(obj['fields']['text']).substring(0, 1000).trim(this)
+                // if text == 1000 chars, add '...'
                 if (string.length == 1000) {
                     string = string + "..."
                 }
+                // add result to page
                 $('div#results').append('<h4><strong>' + obj['fields']['title'] + '</strong></h4>' +
                                       '<span class="long-text">' +  string + '</span>' +
                                       '<p>' + obj['fields']['date_created'] + '</p>' +
@@ -83,38 +93,51 @@
                                       '<div align="left"><strong>Rating: </strong>' + obj['fields']['rating'] + '</div>' +
                                       '<hr>')
                 }
+                // enable button for load more results
                 $('input#load_more').removeAttr('disabled', 'disabled')
                 }
+        // disable button if data empty
         else {
             $('input#load_more').attr('disabled', 'disabled')
         }
     };
-
+    // when search button click
     $('#search_submit').click(function(event) {
+        // clear results
         $('div#results').empty()
         event.preventDefault()
         var author = false
         var text_all = false
+        // if only author search
         if ($('input#author').is(':checked')) {
             author = true
         }
+        // if all text search
         if ($('input#text_all').is(':checked')) {
             text_all = true
         }
+        // to json and send this
+        // action = 'search'
+        // text = value from input search
+        // author = author checkbox
+        // text_all = text all checkbox
+        // date =  select tag with date range, ALL or year
         socket.send(JSON.stringify({
             'action': 'search',
             'text': $('input#search_box').val(), 'author': author,
             'text_all': text_all, 'date': $('select#years').val(),
             }))
-        })
-
+        });
+    // when load_more button click
     $('input#load_more').click(function(event) {
         event.preventDefault()
+        // to json and send this
+        // action = 'more'
         socket.send(JSON.stringify({
             'action': 'more',
         }))
     });
-
+    // open socket
     if (socket.readyState == WebSocket.OPEN) {
         socket.onopen();
     };
