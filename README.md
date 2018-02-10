@@ -3,6 +3,7 @@
 Simple search example with several filters.
 
 ## Documentation
+[Русский ](https://github.com/Chukak/search/blob/master/readme_ru.md)
 
 ## Download
 Clone this repos
