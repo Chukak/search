@@ -39,7 +39,7 @@ Go to project dir and run command
 ``` python manage.py migrate ```
 
 ### Set data 
-If you use Mysql 5.7+. You need mysql.data file. File is in project. In database:
+If you use Mysql 5.7+, you need mysql.data file. File is in project. In Mysql:
 
 ``` 
 LOAD DATA LOCAL INFILE 'your/path/to/project/mysql.data'
