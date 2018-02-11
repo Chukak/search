@@ -34,6 +34,34 @@ Go to project dir and run command
 
 
 ## Started
+### Database
+If you use Mysql 5.7+, create database. In Mysql:
+
+``` CREATE DATABASE search; ```
+
+Create mysql.cnf file. In mysql.cnf:
+
+``` 
+[client]
+database = search
+user = your username
+password = your password
+default-character-set = utf8
+```
+
+In your settings file.
+
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'read_default_file': os.path.join(BASE_DIR, 'mysql.cnf'),
+        }
+    }
+}
+```
+
 ### Set migrations django
 ``` python manage.py makemigrations ```
 
