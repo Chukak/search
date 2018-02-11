@@ -31,6 +31,32 @@
 
 
 ## Запуск
+### База данных 
+Если вы используете Mysql5.7+, создайте базу данных. В Mysql:
+
+CREATE DATABASE search;
+
+Создайте mysql.cnf файл. В mysql.cnf:
+
+```
+[client]
+database = search
+user = your username
+password = your password
+default-character-set = utf8
+```
+
+В вашем файле настроек django:
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'read_default_file': os.path.join(BASE_DIR, 'mysql.cnf'),
+        }
+    }
+}
+
 ### Миграции django
 ``` python manage.py makemigrations ```
 
