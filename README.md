@@ -49,7 +49,7 @@ password = your password
 default-character-set = utf8
 ```
 
-In your settings file.
+In your django settings file:
 
 ```
 DATABASES = {
