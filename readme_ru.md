@@ -76,7 +76,3 @@ FIELDS TERMINATED BY '~~' LINES TERMINATED BY '\n'
 ``` python manage.py runserver ```
 
 и перейдите <strong>localhost:8000</strong>.
-
-
-## Авторы
-[Chukak](https://github.com/Chukak)
