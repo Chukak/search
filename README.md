@@ -81,7 +81,3 @@ Run django server:
 ``` python manage.py runserver ```
 
 and go to <strong>localhost:8000</strong>.
-
-
-## Authors 
-[Chukak](https://github.com/Chukak)
