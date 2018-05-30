@@ -1,19 +1,19 @@
 # Search
 # Introduction
-Simple search example with several filters.
+A simple search with some filters.
 
 ## Documentation
 [Русский ](https://github.com/Chukak/search/blob/master/readme_ru.md)
 
 ## Download
-Clone this repos
+Clone this repository.
 
 ``` git clone https://github.com/Chukak/search.git ```
 
-## Requirements
+## Getting started
 In project is used Django 1.11, Mysql 5.7+, Channels 2+. For Channels 2.0 you need python 3.5+.
 
-### Create venv
+### Create virtual environment
 
 Create python 3.3+ environment 
 
@@ -27,19 +27,19 @@ Create python 3.3+ environment
 
 Or use other envs.
 
-### Set requirements
-Go to project dir and run command
+### Requirements
+Run the command:
 
 ``` pip install -r requirements.txt ```
 
 
 ## Started
 ### Database
-If you use Mysql 5.7+, create database. In Mysql:
+If you use Mysql 5.7+, create a database. In Mysql:
 
 ``` CREATE DATABASE search; ```
 
-Create mysql.cnf file. In mysql.cnf:
+Create the `mysql.cnf` file. In `mysql.cnf`:
 
 ``` 
 [client]
@@ -49,7 +49,7 @@ password = your password
 default-character-set = utf8
 ```
 
-In your django settings file:
+In your django configuration file:
 
 ```
 DATABASES = {
@@ -68,7 +68,7 @@ DATABASES = {
 ``` python manage.py migrate ```
 
 ### Set data 
-If you use Mysql 5.7+, you need mysql.data file. File is in project. In Mysql:
+If you use Mysql 5.7+, you need the `mysql.data` file. The file is in the project. In Mysql:
 
 ``` 
 LOAD DATA LOCAL INFILE 'your/path/to/project/mysql.data'
