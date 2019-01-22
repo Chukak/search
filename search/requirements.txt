@@ -8,7 +8,7 @@ channels==2.0.1
 channels-redis==2.0.2
 constantly==15.1.0
 daphne==2.0.2
-Django==1.11.15
+Django==1.11.18
 hiredis==0.2.0
 hyperlink==17.3.1
 incremental==17.5.0
